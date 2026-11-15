@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Palja — Korean Saju Reading</title>
+<meta name="description" content="Read your Korean saju (four pillars of destiny) in English. Free birth chart, Day Master, five elements and 10-year luck pillars.">
+<meta property="og:title" content="What's your Korean saju?">
+<meta property="og:description" content="Your whole life, written in eight characters. Free Korean birth chart in English.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;900&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: an ink-night page where the five Korean ritual colors (obangsaek) are the only color, carried by the eight characters themselves. */
+:root{
+  --ink:#10131a;
+  --ink-2:#181c26;
+  --line:#2a3040;
+  --paper:#ece7dc;
+  --muted:#9aa0ad;
+  --seal:#c8402e;
+  --wood:#3f9a7c;
+  --fire:#d9533b;
+  --earth:#d8a52c;
+  --metal:#d9d4c8;
+  --water:#5b84c9;
+  --f-display:"Bodoni Moda", "Didot", Georgia, serif;
+  --f-body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-han:"Noto Serif KR", "Songti SC", serif;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--f-body);line-height:1.55}
+body{padding:0 16px 64px}
+a{color:var(--paper)}
+.wrap{max-width:1080px;margin:0 auto}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:10px;font-family:var(--f-display);font-size:26px;font-weight:700;letter-spacing:.02em}
+.brand .han{font-family:var(--f-han);font-weight:900;color:var(--seal);font-size:22px}
+.top small{color:var(--muted);font-size:13px}
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;padding:44px 0 28px;align-items:start}
+@media (max-width:820px){.hero{grid-template-columns:1fr;gap:24px;padding-top:28px}}
+h1{font-family:var(--f-display);font-weight:500;font-size:clamp(36px,5.4vw,60px);line-height:1.04;margin:0 0 16px;text-wrap:balance;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--earth)}
+.lede{color:#c9c4b8;max-width:52ch;font-size:17px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.facts span{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted)}
+
+form.card{background:var(--ink-2);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:14px}
+form.card h2{margin:0;font-size:15px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+input,select{font:inherit;color:var(--paper);background:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--earth);outline-offset:2px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px;color:#c9c4b8}
+.check input{width:18px;height:18px;padding:0}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 18px;font-weight:600}
+.btn-primary{background:var(--paper);color:var(--ink)}
+.btn-primary:hover{background:#fff}
+.btn-ghost{background:transparent;color:var(--paper);border:1px solid var(--line)}
+.btn-ghost:hover{border-color:var(--muted)}
+.btn-seal{background:var(--seal);color:#fff}
+.btn-seal:hover{filter:brightness(1.08)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.err{color:#ff9a86;font-size:13px;margin:0;min-height:0}
+
+section.block{border-top:1px solid var(--line);padding:32px 0}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h3{font-family:var(--f-display);font-weight:500;font-size:clamp(26px,3.4vw,36px);margin:0 0 8px;text-wrap:balance}
+.badge{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--muted);vertical-align:middle;margin-left:8px;font-family:var(--f-body);letter-spacing:.04em}
+
+/* Four pillars */
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+@media (max-width:520px){.pillars{gap:8px}}
+.pillar{background:var(--ink-2);border:1px solid var(--line);border-radius:14px;padding:14px 8px 16px;text-align:center;display:grid;gap:8px;justify-items:center}
+.pillar.day{border-color:var(--paper)}
+.pillar .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pillar.day .lab{color:var(--paper)}
+.glyph{font-family:var(--f-han);font-weight:900;font-size:clamp(40px,8vw,64px);line-height:1;width:100%;padding:10px 0;border-radius:10px}
+.glyph small{display:block;font-family:var(--f-body);font-weight:600;font-size:12px;margin-top:8px;letter-spacing:.02em;color:var(--paper);opacity:.85}
+.pillar .unknown{font-size:13px;color:var(--muted);padding:40px 4px}
+.el-wood{color:var(--wood);background:color-mix(in oklab,var(--wood) 12%,transparent)}
+.el-fire{color:var(--fire);background:color-mix(in oklab,var(--fire) 12%,transparent)}
+.el-earth{color:var(--earth);background:color-mix(in oklab,var(--earth) 12%,transparent)}
+.el-metal{color:var(--metal);background:color-mix(in oklab,var(--metal) 10%,transparent)}
+.el-water{color:var(--water);background:color-mix(in oklab,var(--water) 14%,transparent)}
+
+/* Day master */
+.dm{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
+@media (max-width:640px){.dm{grid-template-columns:1fr}}
+.seal{width:132px;height:132px;border-radius:14px;display:grid;place-items:center;font-family:var(--f-han);font-weight:900;font-size:76px;border:2px solid currentColor}
+.dm p{margin:0 0 12px;max-width:62ch;color:#d6d1c5}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.chips span{background:var(--ink-2);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:13px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.mini{background:var(--ink-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.mini b{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:600}
+.mini p{margin:0;font-size:15px}
+
+/* Elements */
+.bars{display:grid;gap:10px;margin-top:18px;max-width:640px}
+.bar{display:grid;grid-template-columns:88px 1fr 34px;align-items:center;gap:12px;font-size:14px}
+.bar .track{height:14px;border-radius:7px;background:var(--ink-2);border:1px solid var(--line);overflow:hidden}
+.bar .fill{height:100%;border-radius:7px;transition:width .6s ease}
+.bar .n{font-variant-numeric:tabular-nums;text-align:right;color:var(--muted)}
+.bar .name{display:flex;gap:8px;align-items:center}
+.bar .name i{font-style:normal;font-family:var(--f-han);font-weight:900}
+.callout{margin-top:16px;padding:12px 16px;border-left:3px solid var(--earth);background:var(--ink-2);border-radius:0 10px 10px 0;max-width:640px;color:#d6d1c5}
+
+/* Luck */
+.luck{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;margin-top:16px}
+.luck .lp{flex:0 0 92px;background:var(--ink-2);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
+.luck .lp.now{border-color:var(--earth)}
+.luck .lp .gz{font-family:var(--f-han);font-weight:900;font-size:26px;letter-spacing:.04em}
+.luck .lp .age{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Share + paywall */
+.share{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:28px;align-items:start}
+@media (max-width:720px){.share{grid-template-columns:1fr}}
+.share img{width:100%;border-radius:14px;border:1px solid var(--line);display:block}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.pay{background:linear-gradient(180deg,var(--ink-2),var(--ink));border:1px solid var(--line);border-radius:16px;padding:22px}
+.price{font-family:var(--f-display);font-size:44px;line-height:1;margin:6px 0 4px}
+.pay ul{margin:12px 0 18px;padding-left:18px;color:#d6d1c5}
+.pay li{margin:4px 0}
+.reading{margin-top:20px;background:var(--ink-2);border:1px solid var(--line);border-radius:14px;padding:20px 22px;white-space:pre-wrap;max-width:72ch;color:#e3ded2;font-size:16px;line-height:1.7}
+.reading:empty{display:none}
+footer{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){.bar .fill{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span>Palja</span><span class="han">八字</span></div>
+    <small>Korean saju, read in English</small>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>Your whole life, written in <em>eight characters</em>.</h1>
+      <p class="lede">In Korea, saju (사주, “four pillars”) is how people read personality, love and timing from the hour they were born. Four in ten Korean adults have paid for a reading. Enter your birth details to see your chart.</p>
+      <div class="facts"><span>Solar-term accurate</span><span>10-year luck cycles</span><span>2026 · Year of the Fire Horse 丙午</span></div>
+    </div>
+
+    <form class="card" id="f" novalidate>
+      <h2>Your birth details</h2>
+      <label for="bd">Date of birth
+        <input id="bd" type="date" required value="1996-08-21" min="1901-01-01" max="2099-12-31">
+      </label>
+      <div class="row">
+        <label for="bt">Time of birth
+          <input id="bt" type="time" value="14:30">
+        </label>
+        <label for="sx">Sex at birth
+          <select id="sx"><option value="0">Female</option><option value="1">Male</option></select>
+        </label>
+      </div>
+      <label class="check" for="nt"><input id="nt" type="checkbox"> I don’t know my birth time</label>
+      <button class="btn-primary" type="submit">Read my pillars</button>
+      <p class="err" id="err" role="alert"></p>
+      <p class="note" id="ex">Showing an example chart. Enter your own details above.</p>
+    </form>
+  </div>
+
+  <section class="block" id="chart">
+    <p class="eyebrow">Your four pillars · 사주</p>
+    <h3 id="chartTitle">Born 21 Aug 1996, 14:30</h3>
+    <div class="pillars" id="pillars"></div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">Day Master · 일간 · who you are at the core</p>
+    <div class="dm">
+      <div class="seal" id="seal"></div>
+      <div>
+        <h3 id="dmName"></h3>
+        <p id="dmDesc"></p>
+        <div class="chips" id="dmChips"></div>
+        <div class="two">
+          <div class="mini"><b>In love</b><p id="dmLove"></p></div>
+          <div class="mini"><b>At work</b><p id="dmWork"></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">Five elements · 오행</p>
+    <h3 id="elTitle"></h3>
+    <div class="bars" id="bars"></div>
+    <div class="callout" id="elNote"></div>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">2026 · 丙午 · Fire Horse</p>
+    <h3 id="yrTitle"></h3>
+    <p class="lede" id="yrText"></p>
+  </section>
+
+  <section class="block">
+    <p class="eyebrow">Luck pillars · 대운 · your 10-year seasons</p>
+    <h3>The decades of your life</h3>
+    <p class="note">Each block is a ten-year season. The highlighted one is where you are now.</p>
+    <div class="luck" id="luck"></div>
+  </section>
+
+  <section class="block">
+    <div class="share">
+      <div>
+        <p class="eyebrow">Your saju card</p>
+        <img id="cardImg" alt="Your saju card showing your four pillars and Day Master">
+        <div class="actions">
+          <button class="btn-ghost" type="button" id="copyBtn">Copy my result</button>
+        </div>
+        <p class="note" id="copyNote">Press and hold the card (or right-click) to save it.</p>
+      </div>
+      <div class="pay">
+        <p class="eyebrow">Full reading</p>
+        <h3>Everything your chart says</h3>
+        <div class="price">$4.99</div>
+        <p class="note">One-time. Written for your exact chart.</p>
+        <ul>
+          <li>Love and compatibility: who you fall for and why</li>
+          <li>Career and money: where your chart earns</li>
+          <li>2026 month by month, in the Fire Horse year</li>
+          <li>Your current 10-year luck pillar, explained</li>
+          <li>What to lean into and what to watch</li>
+        </ul>
+        <button class="btn-seal" type="button" id="payBtn">Get my full reading</button>
+        <p class="note" id="payNote" style="margin-top:10px"></p>
+      </div>
+    </div>
+    <div class="reading" id="reading" aria-live="polite"></div>
+  </section>
+
+  <footer>
+    <p>For reflection and entertainment. Saju describes tendencies and timing; your choices are yours. Month and year pillars use solar terms; births within a few hours of a solar-term change may differ by timezone.</p>
+    <p>Payments are handled by Polar. If your reading does not load, refresh the page; for a refund, reply to your receipt email.</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lunar-javascript@1.7.7/lunar.js"></script>
+<script>
+
+const EL = {"木":"wood","火":"fire","土":"earth","金":"metal","水":"water"};
+const EL_NAME = {wood:"Wood",fire:"Fire",earth:"Earth",metal:"Metal",water:"Water"};
+const EL_HAN = {wood:"木",fire:"火",earth:"土",metal:"金",water:"水"};
+const STEM = {
+ "甲":{ko:"갑",ro:"Gap",el:"wood",yy:"Yang"}, "乙":{ko:"을",ro:"Eul",el:"wood",yy:"Yin"},
+ "丙":{ko:"병",ro:"Byeong",el:"fire",yy:"Yang"}, "丁":{ko:"정",ro:"Jeong",el:"fire",yy:"Yin"},
+ "戊":{ko:"무",ro:"Mu",el:"earth",yy:"Yang"}, "己":{ko:"기",ro:"Gi",el:"earth",yy:"Yin"},
+ "庚":{ko:"경",ro:"Gyeong",el:"metal",yy:"Yang"}, "辛":{ko:"신",ro:"Sin",el:"metal",yy:"Yin"},
+ "壬":{ko:"임",ro:"Im",el:"water",yy:"Yang"}, "癸":{ko:"계",ro:"Gye",el:"water",yy:"Yin"}
+};
+const BRANCH = {
+ "子":{ko:"자",ro:"Ja",el:"water",an:"Rat"}, "丑":{ko:"축",ro:"Chuk",el:"earth",an:"Ox"},
+ "寅":{ko:"인",ro:"In",el:"wood",an:"Tiger"}, "卯":{ko:"묘",ro:"Myo",el:"wood",an:"Rabbit"},
+ "辰":{ko:"진",ro:"Jin",el:"earth",an:"Dragon"}, "巳":{ko:"사",ro:"Sa",el:"fire",an:"Snake"},
+ "午":{ko:"오",ro:"O",el:"fire",an:"Horse"}, "未":{ko:"미",ro:"Mi",el:"earth",an:"Goat"},
+ "申":{ko:"신",ro:"Sin",el:"metal",an:"Monkey"}, "酉":{ko:"유",ro:"Yu",el:"metal",an:"Rooster"},
+ "戌":{ko:"술",ro:"Sul",el:"earth",an:"Dog"}, "亥":{ko:"해",ro:"Hae",el:"water",an:"Pig"}
+};
+const DM = {
+ "甲":{name:"The Pine",desc:"Yang Wood grows straight up. You set a direction and keep it, and people lean on you because you do not bend easily. Your growth is slow, steady and hard to stop.",traits:["Principled","Protective","Ambitious","Stubborn"],love:"Loyal and steady. You want a partner you can build something long-term with, and you show love by providing structure.",work:"A natural lead on long projects. You do best where you can grow something from the ground up."},
+ "乙":{name:"The Vine",desc:"Yin Wood finds a way around every wall. You are adaptable, sociable and quietly persistent, and you get where you want by bending rather than breaking.",traits:["Adaptable","Charming","Resourceful","Persistent"],love:"Warm and attentive. You bond deeply and read your partner’s moods before they say a word.",work:"Strong at networking, design and anything that needs tact. You thrive with good allies."},
+ "丙":{name:"The Sun",desc:"Yang Fire shines on everyone at once. You are generous, expressive and hard to ignore, and a room changes temperature when you walk in.",traits:["Radiant","Generous","Direct","Restless"],love:"Open-hearted and bold. You love loudly and need a partner who can enjoy the spotlight with you.",work:"Made for visible roles: speaking, performing, leading a team through energy."},
+ "丁":{name:"The Candle",desc:"Yin Fire is a focused flame. You are perceptive, warm in close circles and quietly intense. You light up one person, one idea, one craft at a time.",traits:["Perceptive","Devoted","Creative","Sensitive"],love:"Intimate and caring. You need emotional depth more than grand gestures.",work:"Great at detail, research, teaching and craft. You notice what others miss."},
+ "戊":{name:"The Mountain",desc:"Yang Earth stands still while weather passes. You are dependable, calm and trusted, and people come to you when everything else is shaking.",traits:["Steady","Trustworthy","Patient","Immovable"],love:"Reliable and protective. Slow to open up, then all in for good.",work:"A natural anchor: operations, management, anything that needs a steady hand."},
+ "己":{name:"The Garden",desc:"Yin Earth is fertile soil. You nurture people and ideas until they grow, and you are more practical than you let on.",traits:["Nurturing","Practical","Diplomatic","Self-doubting"],love:"Attentive and giving. You show love through care and small daily acts.",work:"Excellent at developing people, teams and products over time."},
+ "庚":{name:"The Sword",desc:"Yang Metal is raw steel. You are decisive, loyal and blunt, and you would rather be respected than liked. Pressure sharpens you.",traits:["Decisive","Loyal","Brave","Blunt"],love:"Fiercely loyal. You protect what you love, though tenderness takes practice.",work:"Thrives under pressure: crisis roles, competition, cutting through noise."},
+ "辛":{name:"The Jewel",desc:"Yin Metal is polished and precious. You have taste, standards and a sharp eye, and you want to be valued for who you really are.",traits:["Refined","Perfectionist","Elegant","Proud"],love:"Selective and devoted. You need admiration and attention to detail from a partner.",work:"At home in aesthetics, quality and precision: design, finance, beauty, editing."},
+ "壬":{name:"The Ocean",desc:"Yang Water moves with force and depth. You are curious, free-spirited and strategic, and you see the big currents others miss.",traits:["Visionary","Free","Clever","Unpredictable"],love:"Passionate and adventurous. You need freedom inside a relationship.",work:"Strategy, travel, trade, big-picture thinking. You get bored of routine."},
+ "癸":{name:"The Rain",desc:"Yin Water is mist and rain. You are intuitive, imaginative and quietly wise, and you influence people without them noticing.",traits:["Intuitive","Gentle","Imaginative","Private"],love:"Romantic and empathetic. You feel everything and need a safe harbor.",work:"Counseling, writing, research, behind-the-scenes influence."}
+};
+const GEN = {wood:"fire",fire:"earth",earth:"metal",metal:"water",water:"wood"};
+const CTRL = {wood:"earth",earth:"water",water:"fire",fire:"metal",metal:"wood"};
+const YEAR2026 = {
+ same:["A peer year","2026 brings energy like your own. Expect competition and strong alliances. Friends, partners and rivals all get louder; choose your team carefully."],
+ out:["An expression year","Your energy flows out into 2026. It is a year to create, speak up, launch and be seen. Watch for burnout and overspending."],
+ res:["A support year","2026 feeds you. Mentors, study, documents and help from elders come easier. A good year to learn and to rest your foundations."],
+ wealth:["A wealth year","You take charge of 2026’s energy. Money, deals and opportunities move toward you, but they ask for effort and decisiveness."],
+ power:["A pressure year","2026 tests you. Responsibility, career pressure and recognition arrive together. Handle it well and your status rises."]
+};
+
+const $ = id => document.getElementById(id);
+let current = null;
+
+function relation(dmEl, otherEl){
+  if (dmEl===otherEl) return "same";
+  if (GEN[dmEl]===otherEl) return "out";
+  if (GEN[otherEl]===dmEl) return "res";
+  if (CTRL[dmEl]===otherEl) return "wealth";
+  return "power";
+}
+
+function compute(dateStr, timeStr, noTime, sex){
+  const [y,m,d] = dateStr.split("-").map(Number);
+  let hh=12, mm=0;
+  if (!noTime && timeStr){ [hh,mm] = timeStr.split(":").map(Number); }
+  const solar = Solar.fromYmdHms(y,m,d,hh,mm,0);
+  const ec = solar.getLunar().getEightChar();
+  const pillars = [
+    {key:"hour", lab:"Hour", gz: noTime ? null : ec.getTime()},
+    {key:"day", lab:"Day", gz: ec.getDay()},
+    {key:"month", lab:"Month", gz: ec.getMonth()},
+    {key:"year", lab:"Year", gz: ec.getYear()}
+  ];
+  const counts = {wood:0,fire:0,earth:0,metal:0,water:0};
+  pillars.forEach(p=>{ if(!p.gz) return; counts[STEM[p.gz[0]].el]++; counts[BRANCH[p.gz[1]].el]++; });
+  const yun = ec.getYun(sex);
+  const now = new Date().getFullYear();
+  const luck = yun.getDaYun().slice(1,9).map(dy=>({gz:dy.getGanZhi(), age:dy.getStartAge(), start:dy.getStartYear(), end:dy.getEndYear(), now: now>=dy.getStartYear() && now<=dy.getEndYear()}));
+  const dayStem = ec.getDay()[0];
+  return {y,m,d,hh,mm,noTime,sex,pillars,counts,luck,dayStem,total: noTime?6:8};
+}
+
+function glyphHTML(ch, info, sub){
+  return `<div class="glyph el-${info.el}">${ch}<small>${info.ro} · ${sub}</small></div>`;
+}
+
+function render(r){
+  current = r;
+  const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  $("chartTitle").textContent = `Born ${r.d} ${months[r.m-1]} ${r.y}` + (r.noTime ? ", time unknown" : `, ${String(r.hh).padStart(2,"0")}:${String(r.mm).padStart(2,"0")}`);
+  $("pillars").innerHTML = r.pillars.map(p=>{
+    if(!p.gz) return `<div class="pillar"><span class="lab">${p.lab}</span><div class="unknown">Add a birth time to see this pillar</div></div>`;
+    const s=STEM[p.gz[0]], b=BRANCH[p.gz[1]];
+    return `<div class="pillar ${p.key==="day"?"day":""}"><span class="lab">${p.lab}${p.key==="day"?" · You":""}</span>${glyphHTML(p.gz[0],s,EL_NAME[s.el])}${glyphHTML(p.gz[1],b,b.an)}</div>`;
+  }).join("");
+
+  const s = STEM[r.dayStem], dm = DM[r.dayStem];
+  const seal=$("seal"); seal.textContent=r.dayStem; seal.className="seal el-"+s.el;
+  $("dmName").innerHTML = `${s.yy} ${EL_NAME[s.el]}: ${dm.name} <span class="badge">${s.ko} · ${s.ro}</span>`;
+  $("dmDesc").textContent = dm.desc;
+  $("dmChips").innerHTML = dm.traits.map(t=>`<span>${t}</span>`).join("");
+  $("dmLove").textContent = dm.love; $("dmWork").textContent = dm.work;
+
+  const order=["wood","fire","earth","metal","water"];
+  const max=Math.max(...order.map(k=>r.counts[k]));
+  $("bars").innerHTML = order.map(k=>`<div class="bar"><span class="name"><i style="color:var(--${k})">${EL_HAN[k]}</i>${EL_NAME[k]}</span><div class="track"><div class="fill" style="width:${(r.counts[k]/r.total)*100}%;background:var(--${k})"></div></div><span class="n">${r.counts[k]}</span></div>`).join("");
+  const strong=order.filter(k=>r.counts[k]===max);
+  const missing=order.filter(k=>r.counts[k]===0);
+  const names=strong.map(k=>EL_NAME[k]);
+  const list=names.length>1?names.slice(0,-1).join(", ")+" and "+names[names.length-1]:names[0];
+  $("elTitle").textContent = `Mostly ${list}` + (missing.length?`, missing ${missing.map(k=>EL_NAME[k]).join(" and ")}`:", every element present");
+  const fix = {wood:"growth, plants, the color green, the east",fire:"warmth, sunlight, red tones, the south",earth:"routine, grounding, yellow and beige, home",metal:"structure, clean lines, white and silver, the west",water:"rest, travel, black and navy, the north"};
+  $("elNote").textContent = missing.length
+    ? `In saju, a missing element is something you seek from people and surroundings. You may be drawn to ${missing.map(k=>fix[k]).join("; ")}.`
+    : `A complete set of elements is uncommon. Your chart has a natural balance, so the question is which one you lead with.`;
+
+  const rel = relation(s.el, "fire");
+  $("yrTitle").textContent = YEAR2026[rel][0];
+  $("yrText").textContent = YEAR2026[rel][1];
+
+  $("luck").innerHTML = r.luck.map(l=>{
+    const a=STEM[l.gz[0]], b=BRANCH[l.gz[1]];
+    return `<div class="lp ${l.now?"now":""}"><div class="gz"><span style="color:var(--${a.el})">${l.gz[0]}</span><span style="color:var(--${b.el})">${l.gz[1]}</span></div><div class="age">Age ${l.age}+</div><div class="age">${l.start}</div></div>`;
+  }).join("");
+
+  drawCard(r);
+  $("reading").textContent = "";
+  $("payNote").textContent = "";
+}
+
+function drawCard(r){
+  const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+  const css=getComputedStyle(document.documentElement);const col=k=>css.getPropertyValue("--"+k).trim();
+  g.fillStyle=col("ink");g.fillRect(0,0,W,H);
+  g.strokeStyle=col("line");g.lineWidth=2;g.strokeRect(40,40,W-80,H-80);
+  g.fillStyle=col("muted");g.font="600 28px Figtree, sans-serif";g.textAlign="left";g.fillText("MY KOREAN SAJU · 사주",90,120);
+  const s=STEM[r.dayStem],dm=DM[r.dayStem];
+  g.fillStyle=col(s.el);g.font="900 300px 'Noto Serif KR', serif";g.textAlign="center";g.fillText(r.dayStem,W/2,470);
+  g.fillStyle=col("paper");g.font="500 84px 'Bodoni Moda', serif";g.fillText(dm.name,W/2,600);
+  g.fillStyle=col("muted");g.font="500 34px Figtree, sans-serif";g.fillText(`${s.yy} ${EL_NAME[s.el]} Day Master`,W/2,655);
+  const cols=r.pillars,cw=190,x0=(W-cw*4-30*3)/2;
+  cols.forEach((p,i)=>{const x=x0+i*(cw+30);
+    g.fillStyle=col("ink-2");g.fillRect(x,720,cw,330);g.strokeStyle=p.key==="day"?col("paper"):col("line");g.strokeRect(x,720,cw,330);
+    g.fillStyle=col("muted");g.font="600 24px Figtree, sans-serif";g.fillText(p.lab.toUpperCase(),x+cw/2,765);
+    if(!p.gz){g.fillText("?",x+cw/2,900);return;}
+    g.font="900 110px 'Noto Serif KR', serif";
+    g.fillStyle=col(STEM[p.gz[0]].el);g.fillText(p.gz[0],x+cw/2,890);
+    g.fillStyle=col(BRANCH[p.gz[1]].el);g.fillText(p.gz[1],x+cw/2,1020);
+  });
+  g.fillStyle=col("paper");g.font="600 36px Figtree, sans-serif";g.fillText(dm.traits.slice(0,3).join("  ·  "),W/2,1130);
+  g.fillStyle=col("seal");g.font="900 40px 'Noto Serif KR', serif";g.fillText("八字",W/2,1225);
+  g.fillStyle=col("muted");g.font="500 28px Figtree, sans-serif";g.fillText("What’s your saju?",W/2,1270);
+  $("cardImg").src=c.toDataURL("image/png");
+}
+
+function shareText(r){
+  const s=STEM[r.dayStem],dm=DM[r.dayStem];
+  return `My Korean saju: I'm ${r.dayStem} (${s.ro}), ${s.yy} ${EL_NAME[s.el]} — "${dm.name}". ${dm.traits.slice(0,3).join(", ")}. Four pillars: ${r.pillars.map(p=>p.gz||"??").join(" ")}. What's yours?`;
+}
+
+$("f").addEventListener("submit", e=>{
+  e.preventDefault();
+  const bd=$("bd").value;
+  if(!bd){$("err").textContent="Enter your date of birth to read your chart.";return;}
+  const y=+bd.slice(0,4); if(y<1901||y>2099){$("err").textContent="Use a birth year between 1901 and 2099.";return;}
+  $("err").textContent="";
+  try{
+    lastInput = readForm();
+    render(compute(lastInput.date,lastInput.time,lastInput.noTime,lastInput.sex));
+    $("ex").textContent="Your chart is ready below.";
+    $("chart").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  }catch(err){$("err").textContent="Could not read that date. Check it and try again.";}
+});
+$("nt").addEventListener("change",()=>{$("bt").disabled=$("nt").checked;});
+
+$("copyBtn").addEventListener("click", async ()=>{
+  try{await navigator.clipboard.writeText(shareText(current));$("copyNote").textContent="Copied. Paste it with your card.";}
+  catch(e){$("copyNote").textContent=shareText(current);}
+});
+
+let lastInput = {date:"1996-08-21", time:"14:30", noTime:false, sex:0};
+
+function readForm(){
+  const noTime = $("nt").checked || !$("bt").value;
+  return {date:$("bd").value, time:noTime?"":$("bt").value, noTime, sex:+$("sx").value};
+}
+function setForm(i){
+  $("bd").value=i.date; $("bt").value=i.time||""; $("nt").checked=!!i.noTime; $("bt").disabled=!!i.noTime; $("sx").value=String(i.sex);
+}
+
+$("payBtn").addEventListener("click", async ()=>{
+  const btn=$("payBtn"); btn.disabled=true; btn.textContent="Opening secure checkout…";
+  $("payNote").textContent="";
+  try{
+    const r = await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(lastInput)});
+    const data = await r.json().catch(()=>({}));
+    if(!r.ok || !data.url) throw new Error(data.error||"Checkout is unavailable right now. Try again in a minute.");
+    window.location.href = data.url;
+  }catch(err){
+    $("payNote").textContent = err.message;
+    btn.disabled=false; btn.textContent="Get my full reading";
+  }
+});
+
+function cacheKey(id){ return "palja-reading-"+id; }
+function showReading(text){
+  $("reading").textContent=text;
+  $("payBtn").style.display="none";
+  $("payNote").textContent="Your full reading is below. Bookmark this page to come back to it.";
+}
+
+async function loadPaidReading(id, tries){
+  try{
+    const cached = JSON.parse(localStorage.getItem(cacheKey(id))||"null");
+    if (cached && cached.text){ lastInput=cached.input; setForm(cached.input); render(compute(cached.input.date,cached.input.time,cached.input.noTime,cached.input.sex)); showReading(cached.text); return; }
+  }catch(e){}
+  $("reading").textContent="Thank you! Writing your full reading. This takes about 30 seconds…";
+  $("payNote").textContent="Payment received.";
+  try{
+    const r = await fetch("/api/reading?checkout_id="+encodeURIComponent(id));
+    const data = await r.json().catch(()=>({}));
+    if (r.status===202 && tries<10){ setTimeout(()=>loadPaidReading(id,tries+1),3000); return; }
+    if(!r.ok) throw new Error(data.error||"The reading could not be loaded. Refresh to try again.");
+    lastInput=data.input; setForm(data.input);
+    render(compute(data.input.date,data.input.time,data.input.noTime,data.input.sex));
+    showReading(data.text);
+    try{ localStorage.setItem(cacheKey(id), JSON.stringify({input:data.input,text:data.text})); }catch(e){}
+  }catch(err){
+    $("reading").textContent="";
+    $("payNote").textContent=err.message;
+  }
+  $("reading").scrollIntoView({block:"start"});
+}
+
+function start(){
+  if (typeof Solar==="undefined"){ $("err").textContent="The calendar library did not load. Refresh the page."; return; }
+  render(compute(lastInput.date,lastInput.time,lastInput.noTime,lastInput.sex));
+  const id = new URLSearchParams(location.search).get("checkout_id");
+  if (id) loadPaidReading(id,0);
+}
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
+</script>
+</body>
+</html>

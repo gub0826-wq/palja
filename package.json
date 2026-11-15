@@ -1,0 +1,10 @@
+{
+  "name": "palja",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Palja - Korean saju readings in English",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "lunar-javascript": "1.7.7"
+  }
+}
