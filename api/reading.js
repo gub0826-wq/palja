@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5",
-        max_tokens: 2500,
+        max_tokens: 8000,
         messages: [{ role: "user", content: buildPrompt(input, chart) }]
       })
     });
