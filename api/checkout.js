@@ -1,11 +1,16 @@
 // POST /api/checkout  { date, time, noTime, sex }  ->  { url }
-// Creates a Polar checkout for the full reading. The birth details ride along
-// as metadata, so the reading is always written for the chart that was paid for.
 const { cleanInput } = require("../lib/saju");
 
-const POLAR_API = process.env.POLAR_SERVER === "production"
+const env = (k) => String(process.env[k] || "").trim().replace(/^["']|["']$/g, "");
+const POLAR_API = env("POLAR_SERVER").toLowerCase() === "production"
   ? "https://api.polar.sh"
   : "https://sandbox-api.polar.sh";
+
+function siteUrl(req) {
+  let s = env("SITE_URL") || `https://${req.headers.host}`;
+  if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+  return s.replace(/\/+$/, "");
+}
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
@@ -15,29 +20,34 @@ module.exports = async (req, res) => {
   const input = cleanInput(typeof req.body === "string" ? safeJson(req.body) : req.body);
   if (!input) return res.status(400).json({ error: "Check your birth date and time, then try again." });
 
-  const site = (process.env.SITE_URL || `https://${req.headers.host}`).replace(/\/$/, "");
+  const metadata = { date: input.date, noTime: input.noTime ? "true" : "false", sex: String(input.sex) };
+  if (input.time) metadata.time = input.time;
+
   try {
     const r = await fetch(`${POLAR_API}/v1/checkouts/`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${process.env.POLAR_ACCESS_TOKEN}`,
+        Authorization: `Bearer ${env("POLAR_ACCESS_TOKEN")}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        products: [process.env.POLAR_PRODUCT_ID],
-        success_url: `${site}/?checkout_id={CHECKOUT_ID}`,
-        metadata: {
-          date: input.date,
-          time: input.time,
-          noTime: input.noTime ? "true" : "false",
-          sex: String(input.sex)
-        }
+        products: [env("POLAR_PRODUCT_ID")],
+        success_url: `${siteUrl(req)}/?checkout_id={CHECKOUT_ID}`,
+        metadata
       })
     });
     const data = await r.json().catch(() => ({}));
     if (!r.ok || !data.url) {
-      console.error("Polar checkout failed", r.status, JSON.stringify(data).slice(0, 500));
-      return res.status(502).json({ error: "Checkout is unavailable right now. Try again in a minute." });
+      const hint = Array.isArray(data.detail)
+        ? data.detail.map((d) => `${(d.loc || []).join(".")}: ${d.msg}`).join(" | ")
+        : (data.error || data.detail || "");
+      console.error("Polar checkout failed", r.status, JSON.stringify(data));
+      return res.status(502).json({
+        error: "Checkout is unavailable right now. Try again in a minute.",
+        polar_status: r.status,
+        polar_hint: String(hint).slice(0, 400),
+        polar_server: POLAR_API.includes("sandbox") ? "sandbox" : "production"
+      });
     }
     return res.status(200).json({ url: data.url });
   } catch (e) {
