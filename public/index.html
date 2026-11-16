@@ -456,7 +456,7 @@ async function loadPaidReading(id, tries){
   $("reading").textContent="Thank you! Writing your full reading. This takes about 30 seconds…";
   $("payNote").textContent="Payment received.";
   try{
-    const r = await fetch("/api/reading?checkout_id="+encodeURIComponent(id));
+    const r = await fetch("/api/reading"+location.search);
     const data = await r.json().catch(()=>({}));
     if (r.status===202 && tries<10){ setTimeout(()=>loadPaidReading(id,tries+1),3000); return; }
     if(!r.ok) throw new Error(data.error||"The reading could not be loaded. Refresh to try again.");
@@ -474,7 +474,7 @@ async function loadPaidReading(id, tries){
 function start(){
   if (typeof Solar==="undefined"){ $("err").textContent="The calendar library did not load. Refresh the page."; return; }
   render(compute(lastInput.date,lastInput.time,lastInput.noTime,lastInput.sex));
-  const id = new URLSearchParams(location.search).get("checkout_id");
+  const id = new URLSearchParams(location.search).get("o");
   if (id) loadPaidReading(id,0);
 }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(start); else start();
